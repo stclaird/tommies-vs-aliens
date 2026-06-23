@@ -1,0 +1,20 @@
+# Godot 4 generated data
+.godot/
+
+# Godot import metadata/cache files
+.import/
+*.import
+
+# Mono/.NET generated files (if C# is enabled)
+.mono/
+data_*/
+
+# Build/export artifacts
+*.apk
+*.aab
+*.ipa
+*.exe
+*.x86_64
+*.x86
+*.zip
+*.pck

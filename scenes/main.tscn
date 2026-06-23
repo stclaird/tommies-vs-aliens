@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://graphics/soldier-1-stand-rt-Sheet.png" id="1_texture"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_script"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("2_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 240)
+enabled = true
+zoom = Vector2(0.8, 0.8)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(320, 240)
+texture = ExtResource("1_texture")
+hframes = 6
+frame = 0
