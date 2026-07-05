@@ -16,6 +16,8 @@ const WALK_FPS := 10.0
 const FIRST_FRAME_HOLD := 2.0
 const REFERENCE_VIEWPORT := Vector2(480.0, 270.0)
 const BASE_SPRITE_SCALE := 1.0
+const LEVEL_SIZE := Vector2(1280.0, 720.0)
+const TOP_PLAY_AREA_INSET := 48w.0
 
 var frame_timer := 0.0
 var facing_left := false
@@ -27,6 +29,7 @@ func _ready() -> void:
 	sprite.hframes = STAND_FRAMES
 	sprite.frame = 0
 	_update_sprite_scale()
+	_clamp_to_level_bounds()
 	get_viewport().size_changed.connect(_update_sprite_scale)
 
 func _process(delta: float) -> void:
@@ -40,6 +43,7 @@ func _process(delta: float) -> void:
 
 	if moving:
 		position += input_dir * WALK_SPEED * delta
+		_clamp_to_level_bounds()
 
 		if input_dir.x < 0.0:
 			facing_left = true
@@ -108,3 +112,15 @@ func _update_sprite_scale() -> void:
 	var integer_factor: float = maxf(1.0, floorf(scale_factor))
 	var final_scale: float = BASE_SPRITE_SCALE * integer_factor
 	sprite.scale = Vector2(final_scale, final_scale)
+	_clamp_to_level_bounds()
+
+func _clamp_to_level_bounds() -> void:
+	var frame_size := Vector2(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
+	var half_size := frame_size * sprite.scale * 0.5
+	var min_x := half_size.x
+	var max_x := LEVEL_SIZE.x - half_size.x
+	var min_y := TOP_PLAY_AREA_INSET + half_size.y
+	var max_y := LEVEL_SIZE.y - half_size.y
+
+	position.x = clampf(position.x, min_x, max_x)
+	position.y = clampf(position.y, min_y, max_y)
