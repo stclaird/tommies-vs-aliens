@@ -20,10 +20,18 @@ config/features=PackedStringArray("4.6")
 
 [display]
 
-window/size/viewport_width=640
-window/size/viewport_height=480
-window/stretch/mode="viewport"
-window/stretch/aspect="keep"
+window/size/viewport_width=1920
+window/size/viewport_height=1084
+window/size/resizable=false
+window/size/window_width_override=1280
+window/size/window_height_override=960
+window/stretch/mode="canvas_items"
+window/stretch/scale=3.0
+window/stretch/scale_mode="integer"
+
+[gui]
+
+common/snap_controls_to_pixels=false
 
 [rendering]
 
