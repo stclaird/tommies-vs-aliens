@@ -17,7 +17,7 @@ const FIRST_FRAME_HOLD := 2.0
 const REFERENCE_VIEWPORT := Vector2(480.0, 270.0)
 const BASE_SPRITE_SCALE := 1.0
 const LEVEL_SIZE := Vector2(1280.0, 720.0)
-const TOP_PLAY_AREA_INSET := 48w.0
+const TOP_PLAY_AREA_INSET := 48.0
 
 var frame_timer := 0.0
 var facing_left := false
