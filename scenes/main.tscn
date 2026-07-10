@@ -1,30 +1,73 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://4qqyi5j7odtm"]
 
-[ext_resource type="Texture2D" path="res://graphics/soldier-1-stand-rt-Sheet.png" id="1_texture"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_script"]
-[ext_resource type="Texture2D" path="res://graphics/barracks.png" id="3_texture"]
+[ext_resource type="Texture2D" uid="uid://dqyr05j5ddnhr" path="res://graphics/soldier-1-stand-rt-Sheet.png" id="1_texture"]
+[ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://scripts/player.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cgvno07hvtc3h" path="res://graphics/barracks.png" id="3_texture"]
+[ext_resource type="Texture2D" uid="uid://dt7cyrv5oeins" path="res://graphics/barracks-shower-wall-export.png" id="4_texture"]
 
-[node name="Main" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(28, 30)
 
-[node name="Background" type="Sprite2D" parent="."]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_left"]
+size = Vector2(79, 67)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_right"]
+size = Vector2(86, 67)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_upper_left"]
+size = Vector2(8, 170)
+
+[node name="Main" type="Node2D" unique_id=2034829179]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=400995830]
+z_index = -1
 position = Vector2(640, 360)
 texture = ExtResource("3_texture")
-z_index = -1
 
-[node name="Player" type="Node2D" parent="."]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1350078749]
 position = Vector2(96, 128)
 script = ExtResource("2_script")
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
-enabled = true
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1652545347]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_player")
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1671633583]
 limit_left = 0
 limit_top = 0
 limit_right = 1280
 limit_bottom = 720
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
 
-[node name="Sprite2D" type="Sprite2D" parent="Player"]
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1991990350]
+z_index = 10
+z_as_relative = false
 texture = ExtResource("1_texture")
 hframes = 6
-frame = 0
+
+[node name="ShowerWall" type="Node2D" parent="." unique_id=1574392362]
+position = Vector2(1154, 121)
+
+[node name="Sprite2D" type="Sprite2D" parent="ShowerWall" unique_id=1620841724]
+z_as_relative = false
+texture = ExtResource("4_texture")
+
+[node name="WallLeft" type="StaticBody2D" parent="ShowerWall" unique_id=553320178]
+position = Vector2(-82.5, 87)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShowerWall/WallLeft" unique_id=701286408]
+shape = SubResource("RectangleShape2D_wall_left")
+debug_color = Color(0.16070846, 0.35185033, 0.3444987, 0.8156863)
+
+[node name="WallUpperLeft" type="StaticBody2D" parent="ShowerWall"]
+position = Vector2(-124.5, -35.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShowerWall/WallUpperLeft"]
+shape = SubResource("RectangleShape2D_wall_upper_left")
+
+[node name="WallRight" type="StaticBody2D" parent="ShowerWall" unique_id=1339507050]
+position = Vector2(83, 87)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShowerWall/WallRight" unique_id=205167193]
+shape = SubResource("RectangleShape2D_wall_right")

@@ -1,6 +1,7 @@
-extends Node2D
+extends CharacterBody2D
 
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var shower_wall_sprite: Sprite2D = get_node_or_null("../ShowerWall/Sprite2D")
 
 const STAND_RT_TEXTURE := preload("res://graphics/soldier-1-stand-rt-Sheet.png")
 const STAND_LT_TEXTURE := preload("res://graphics/soldier-1-stand-lt-Sheet.png")
@@ -18,6 +19,11 @@ const REFERENCE_VIEWPORT := Vector2(480.0, 270.0)
 const BASE_SPRITE_SCALE := 1.0
 const LEVEL_SIZE := Vector2(1280.0, 720.0)
 const TOP_PLAY_AREA_INSET := 48.0
+const SHOWER_WALL_CUTOFF_LOCAL_Y := 174.0
+const PLAYER_FRONT_Z := 10
+const PLAYER_BEHIND_Z := 0
+const WALL_FRONT_Z := 10
+const WALL_BACK_Z := 0
 
 var frame_timer := 0.0
 var facing_left := false
@@ -30,9 +36,10 @@ func _ready() -> void:
 	sprite.frame = 0
 	_update_sprite_scale()
 	_clamp_to_level_bounds()
+	_update_depth_sorting()
 	get_viewport().size_changed.connect(_update_sprite_scale)
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var input_dir := _get_movement_input()
 	was_moving = moving
 	moving = input_dir != Vector2.ZERO
@@ -42,8 +49,7 @@ func _process(delta: float) -> void:
 		frame_timer = 0.0
 
 	if moving:
-		position += input_dir * WALK_SPEED * delta
-		_clamp_to_level_bounds()
+		velocity = input_dir * WALK_SPEED
 
 		if input_dir.x < 0.0:
 			facing_left = true
@@ -52,7 +58,12 @@ func _process(delta: float) -> void:
 
 		_set_sprite_state(true, facing_left)
 	else:
+		velocity = Vector2.ZERO
 		_set_sprite_state(false, facing_left)
+
+	move_and_slide()
+	_clamp_to_level_bounds()
+	_update_depth_sorting()
 
 	frame_timer += delta
 
@@ -124,3 +135,19 @@ func _clamp_to_level_bounds() -> void:
 
 	position.x = clampf(position.x, min_x, max_x)
 	position.y = clampf(position.y, min_y, max_y)
+
+func _update_depth_sorting() -> void:
+	if shower_wall_sprite == null or shower_wall_sprite.texture == null:
+		return
+
+	var wall_top_y := shower_wall_sprite.global_position.y - (shower_wall_sprite.texture.get_height() * shower_wall_sprite.scale.y * 0.5)
+	var cutoff_y := wall_top_y + SHOWER_WALL_CUTOFF_LOCAL_Y
+	var frame_size := Vector2(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
+	var player_top_y := sprite.global_position.y - (frame_size.y * sprite.scale.y * 0.5)
+
+	if player_top_y < cutoff_y:
+		sprite.z_index = PLAYER_BEHIND_Z
+		shower_wall_sprite.z_index = WALL_FRONT_Z
+	else:
+		sprite.z_index = PLAYER_FRONT_Z
+		shower_wall_sprite.z_index = WALL_BACK_Z
