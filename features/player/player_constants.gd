@@ -1,9 +1,9 @@
 extends RefCounted
 
-const STAND_RT_TEXTURE := preload("res://graphics/soldier-1-stand-rt-Sheet.png")
-const STAND_LT_TEXTURE := preload("res://graphics/soldier-1-stand-lt-Sheet.png")
-const WALK_RT_TEXTURE := preload("res://graphics/soldier-1-walk-rt-Sheet.png")
-const WALK_LT_TEXTURE := preload("res://graphics/soldier-1-walk-lt-Sheet.png")
+const STAND_RT_TEXTURE := preload("res://features/player/sprites/tommy-stand-right-Sheet.png")
+const STAND_LT_TEXTURE := preload("res://features/player/sprites/tommy-stand-left-Sheet.png")
+const WALK_RT_TEXTURE := preload("res://features/player/sprites/tommy-walk-right-Sheet.png")
+const WALK_LT_TEXTURE := preload("res://features/player/sprites/tommy-walk-left-Sheet.png")
 
 const WALK_SPEED := 120.0
 

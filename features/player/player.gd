@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var shower_wall_sprite: Sprite2D = get_node_or_null("../ShowerWall/Sprite2D")
-const PlayerConstants = preload("res://scripts/player_constants.gd")
+const PlayerConstants = preload("res://features/player/player_constants.gd")
 
 var frame_timer := 0.0
 var facing_left := false
