@@ -3,8 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://dqyr05j5ddnhr" path="res://features/player/sprites/tommy-stand-right-Sheet.png" id="1_texture"]
 [ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://cgvno07hvtc3h" path="res://features/levels/barracks/sprites/barracks.png" id="3_texture"]
-[ext_resource type="Texture2D" uid="uid://dt7cyrv5oeins" path="res://features/levels/barracks/sprites/barracks-shower-wall-export.png" id="4_texture"]
-[ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-urinals-wall.png" id="5_texture"]
+[ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-shower-wall.png" id="4_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 30)
@@ -22,7 +21,7 @@ size = Vector2(8, 170)
 
 [node name="Background" type="Sprite2D" parent="." unique_id=400995830]
 z_index = -1
-position = Vector2(400, 300)
+position = Vector2(600, 300)
 texture = ExtResource("3_texture")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1350078749]
@@ -36,7 +35,7 @@ shape = SubResource("RectangleShape2D_player")
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1671633583]
 limit_left = 0
 limit_top = 0
-limit_right = 800
+limit_right = 1200
 limit_bottom = 600
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
@@ -48,7 +47,7 @@ texture = ExtResource("1_texture")
 hframes = 6
 
 [node name="ShowerWall" type="Node2D" parent="." unique_id=1574392362]
-position = Vector2(1152, 120)
+position = Vector2(830, 120.5)
 
 [node name="Sprite2D" type="Sprite2D" parent="ShowerWall" unique_id=1620841724]
 z_as_relative = false
@@ -72,7 +71,3 @@ position = Vector2(83, 87)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShowerWall/WallRight" unique_id=205167193]
 shape = SubResource("RectangleShape2D_wall_right")
-
-[node name="UrinalsWall" type="Sprite2D" parent="."]
-position = Vector2(1154, 438)
-texture = ExtResource("5_texture")
