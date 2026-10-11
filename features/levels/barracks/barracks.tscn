@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://cgvno07hvtc3h" path="res://features/levels/barracks/sprites/barracks.png" id="3_texture"]
 [ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-shower-wall.png" id="4_texture"]
+[ext_resource type="PackedScene" path="res://features/enemies/aliens/terry/terry.tscn" id="5_terry"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 30)
@@ -71,3 +72,5 @@ position = Vector2(83, 87)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ShowerWall/WallRight" unique_id=205167193]
 shape = SubResource("RectangleShape2D_wall_right")
+
+[node name="Terry" parent="." instance=ExtResource("5_terry")]

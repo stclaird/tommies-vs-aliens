@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/enemies/aliens/terry/terry.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_terry"]
+size = Vector2(24, 32)
+
+[node name="Terry" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 1
+z_index = 5
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 26)
+shape = SubResource("RectangleShape2D_terry")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
