@@ -1,10 +1,14 @@
 extends CharacterBody2D
 
+const SHOT_SCENE := preload("res://features/player/projectiles/shot.tscn")
+
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var firing_sound: AudioStreamPlayer = $FiringSound
 @onready var shower_wall_sprite: Sprite2D = get_node_or_null("../ShowerWall/Sprite2D")
 const PlayerConstants = preload("res://features/player/player_constants.gd")
 
 var frame_timer := 0.0
+var shot_cooldown := 0.0
 var facing_left := false
 var moving := false
 var was_moving := false
@@ -19,6 +23,10 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_update_sprite_scale)
 
 func _physics_process(delta: float) -> void:
+	shot_cooldown = maxf(0.0, shot_cooldown - delta)
+	if Input.is_physical_key_pressed(KEY_SPACE) and shot_cooldown <= 0.0:
+		_shoot()
+
 	var input_dir := _get_movement_input()
 	was_moving = moving
 	moving = input_dir != Vector2.ZERO
@@ -52,6 +60,15 @@ func _physics_process(delta: float) -> void:
 			sprite.frame = (sprite.frame + 1) % PlayerConstants.WALK_FRAMES
 		else:
 			sprite.frame = (sprite.frame + 1) % PlayerConstants.STAND_FRAMES
+
+func _shoot() -> void:
+	var shot_direction := -1 if facing_left else 1
+	var shot = SHOT_SCENE.instantiate()
+	get_tree().current_scene.add_child(shot)
+	shot.global_position = global_position + Vector2(shot_direction * 24.0, 26.0)
+	shot.call("set_direction", shot_direction)
+	firing_sound.play()
+	shot_cooldown = 0.35
 
 func _get_current_frame_duration() -> float:
 	if moving:
@@ -88,8 +105,10 @@ func _get_movement_input() -> Vector2:
 		y += 1.0
 
 	# Fallback to existing input actions if the project defines them.
-	x += Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-	y += Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
+	if InputMap.has_action("move_right") and InputMap.has_action("move_left"):
+		x += Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	if InputMap.has_action("move_down") and InputMap.has_action("move_up"):
+		y += Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
 
 	if x == 0.0 and y == 0.0:
 		return Vector2.ZERO
