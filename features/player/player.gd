@@ -12,6 +12,7 @@ var shot_cooldown := 0.0
 var facing_left := false
 var moving := false
 var was_moving := false
+var shoot_animation_timer := 0.0
 
 func _ready() -> void:
 	sprite.texture = PlayerConstants.STAND_RT_TEXTURE
@@ -24,12 +25,14 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	shot_cooldown = maxf(0.0, shot_cooldown - delta)
+	shoot_animation_timer = maxf(0.0, shoot_animation_timer - delta)
 	if Input.is_physical_key_pressed(KEY_SPACE) and shot_cooldown <= 0.0:
 		_shoot()
 
 	var input_dir := _get_movement_input()
+	var is_shooting := shoot_animation_timer > 0.0
 	was_moving = moving
-	moving = input_dir != Vector2.ZERO
+	moving = input_dir != Vector2.ZERO and not is_shooting
 
 	if was_moving and not moving:
 		sprite.frame = 0
@@ -56,21 +59,32 @@ func _physics_process(delta: float) -> void:
 
 	while frame_timer >= _get_current_frame_duration():
 		frame_timer -= _get_current_frame_duration()
-		if moving:
+		if shoot_animation_timer > 0.0:
+			sprite.frame = (sprite.frame + 1) % PlayerConstants.SHOOT_FRAMES
+		elif moving:
 			sprite.frame = (sprite.frame + 1) % PlayerConstants.WALK_FRAMES
 		else:
 			sprite.frame = (sprite.frame + 1) % PlayerConstants.STAND_FRAMES
 
 func _shoot() -> void:
+	if shoot_animation_timer <= 0.0:
+		sprite.frame = 0
+		frame_timer = 0.0
+	shoot_animation_timer = PlayerConstants.SHOOT_ANIMATION_DURATION
+
 	var shot_direction := -1 if facing_left else 1
 	var shot = SHOT_SCENE.instantiate()
 	get_tree().current_scene.add_child(shot)
-	shot.global_position = global_position + Vector2(shot_direction * 24.0, 26.0)
+	var sprite_top := sprite.global_position.y - PlayerConstants.SHOOT_RT_TEXTURE.get_height() * sprite.global_scale.y * 0.5
+	shot.global_position = Vector2(global_position.x + shot_direction * 24.0, sprite_top + 20.0 * sprite.global_scale.y)
 	shot.call("set_direction", shot_direction)
 	firing_sound.play()
-	shot_cooldown = 0.35
+	shot_cooldown = PlayerConstants.SHOOT_ANIMATION_DURATION + PlayerConstants.SHOOT_PAUSE
 
 func _get_current_frame_duration() -> float:
+	if shoot_animation_timer > 0.0:
+		return 1.0 / PlayerConstants.SHOOT_FPS
+
 	if moving:
 		return 1.0 / PlayerConstants.WALK_FPS
 
@@ -80,7 +94,12 @@ func _get_current_frame_duration() -> float:
 	return 1.0 / PlayerConstants.STAND_FPS
 
 func _set_sprite_state(is_walking: bool, is_facing_left: bool) -> void:
-	if is_walking:
+	if shoot_animation_timer > 0.0:
+		sprite.texture = PlayerConstants.SHOOT_LT_TEXTURE if is_facing_left else PlayerConstants.SHOOT_RT_TEXTURE
+		sprite.hframes = PlayerConstants.SHOOT_FRAMES
+		if sprite.frame >= PlayerConstants.SHOOT_FRAMES:
+			sprite.frame = 0
+	elif is_walking:
 		sprite.texture = PlayerConstants.WALK_LT_TEXTURE if is_facing_left else PlayerConstants.WALK_RT_TEXTURE
 		sprite.hframes = PlayerConstants.WALK_FRAMES
 		if sprite.frame >= PlayerConstants.WALK_FRAMES:
@@ -135,17 +154,11 @@ func _clamp_to_level_bounds() -> void:
 	position.y = clampf(position.y, min_y, max_y)
 
 func _update_depth_sorting() -> void:
+	sprite.z_index = roundi(global_position.y)
 	if shower_wall_sprite == null or shower_wall_sprite.texture == null:
 		return
 
 	var wall_top_y := shower_wall_sprite.global_position.y - (shower_wall_sprite.texture.get_height() * shower_wall_sprite.scale.y * 0.5)
 	var cutoff_y := wall_top_y + PlayerConstants.SHOWER_WALL_CUTOFF_LOCAL_Y
 	var frame_size := Vector2(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
-	var player_top_y := sprite.global_position.y - (frame_size.y * sprite.scale.y * 0.5)
-
-	if player_top_y < cutoff_y:
-		sprite.z_index = PlayerConstants.PLAYER_BEHIND_Z
-		shower_wall_sprite.z_index = PlayerConstants.WALL_FRONT_Z
-	else:
-		sprite.z_index = PlayerConstants.PLAYER_FRONT_Z
-		shower_wall_sprite.z_index = PlayerConstants.WALL_BACK_Z
+	shower_wall_sprite.z_index = roundi(cutoff_y + frame_size.y * sprite.scale.y * 0.5)

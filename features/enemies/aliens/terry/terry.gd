@@ -1,16 +1,16 @@
 extends CharacterBody2D
 
 signal died
- 
+  
 const WALK_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-left.png")
 const WALK_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-right.png")
 const STAND_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-left.png")
 const STAND_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-right.png")
 
 const PATROL_LEFT := 40.0
-const PATROL_RIGHT := 600.0
-const SPAWN_TOP := 270.0
-const SPAWN_BOTTOM := 310.0
+const PATROL_RIGHT := 1160.0
+const SPAWN_TOP := 80.0
+const SPAWN_BOTTOM := 520.0
 const WALK_SPEED := 48.0
 const WALK_FRAMES := 6
 const WALK_FPS := 8.0
@@ -41,6 +41,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
+		z_index = roundi(global_position.y)
 
 	if paused:
 		state_timer -= delta
