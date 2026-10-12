@@ -13,7 +13,7 @@ var remaining_lifetime := LIFETIME
 var animation_timer := 0.0
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
+	area_entered.connect(_on_area_entered)
 
 func _physics_process(delta: float) -> void:
 	global_position.x += direction * SPEED * delta
@@ -33,7 +33,8 @@ func set_direction(horizontal_direction: int) -> void:
 	sprite.hframes = 4
 	sprite.frame = 0
 
-func _on_body_entered(body: Node2D) -> void:
-	if body.has_method("take_hit"):
-		body.call("take_hit")
+func _on_area_entered(area: Area2D) -> void:
+	var target := area.get_parent()
+	if target.has_method("take_hit"):
+		target.call("take_hit")
 	queue_free()

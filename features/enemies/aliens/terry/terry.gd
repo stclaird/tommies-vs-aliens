@@ -6,6 +6,8 @@ const WALK_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-
 const WALK_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-right.png")
 const STAND_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-left.png")
 const STAND_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-right.png")
+const SHOT_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-left.png")
+const SHOT_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-right.png")
 
 const PATROL_LEFT := 40.0
 const PATROL_RIGHT := 1160.0
@@ -14,6 +16,8 @@ const SPAWN_BOTTOM := 520.0
 const WALK_SPEED := 48.0
 const WALK_FRAMES := 6
 const WALK_FPS := 8.0
+const SHOT_FRAMES := 4
+const SHOT_FPS := 12.0
 const WALK_TIME_MIN := 3.0
 const WALK_TIME_MAX := 7.0
 const PAUSE_TIME_MIN := 0.8
@@ -25,6 +29,7 @@ var rng := RandomNumberGenerator.new()
 var direction := 1
 var paused := false
 var is_dead := false
+var hit_animation_playing := false
 var state_timer := 0.0
 var frame_timer := 0.0
 
@@ -39,9 +44,13 @@ func _ready() -> void:
 	_set_sprite_state(true)
 
 func _physics_process(delta: float) -> void:
+	if hit_animation_playing:
+		_advance_hit_animation(delta)
+		return
+
 	if is_dead:
 		return
-		z_index = roundi(global_position.y)
+	z_index = roundi(global_position.y)
 
 	if paused:
 		state_timer -= delta
@@ -83,8 +92,25 @@ func take_hit() -> void:
 	if is_dead:
 		return
 	is_dead = true
-	died.emit()
-	queue_free()
+	hit_animation_playing = true
+	paused = false
+	velocity = Vector2.ZERO
+	sprite.texture = SHOT_LEFT_TEXTURE if direction < 0 else SHOT_RIGHT_TEXTURE
+	sprite.hframes = SHOT_FRAMES
+	sprite.frame = 0
+	frame_timer = 0.0
+
+func _advance_hit_animation(delta: float) -> void:
+	frame_timer += delta
+	var frame_duration := 1.0 / SHOT_FPS
+	while frame_timer >= frame_duration:
+		frame_timer -= frame_duration
+		if sprite.frame >= SHOT_FRAMES - 1:
+			hit_animation_playing = false
+			died.emit()
+			queue_free()
+			return
+		sprite.frame += 1
 
 func _set_sprite_state(walking: bool) -> void:
 	if walking:

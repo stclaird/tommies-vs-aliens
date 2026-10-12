@@ -7,7 +7,7 @@ size = Vector2(8, 4)
 
 [node name="Shot" type="Area2D"]
 collision_layer = 0
-collision_mask = 2
+collision_mask = 4
 z_index = 20
 script = ExtResource("1_script")
 

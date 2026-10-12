@@ -5,6 +5,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_terry"]
 size = Vector2(24, 32)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_terry_hurtbox"]
+size = Vector2(32, 64)
+
 [node name="Terry" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 1
@@ -14,5 +17,13 @@ script = ExtResource("1_script")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 26)
 shape = SubResource("RectangleShape2D_terry")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+position = Vector2(0, -16)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_terry_hurtbox")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
