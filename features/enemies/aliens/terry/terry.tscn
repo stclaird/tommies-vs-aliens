@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://features/enemies/aliens/terry/terry.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_terry"]
-size = Vector2(24, 32)
+size = Vector2(24, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_terry_hurtbox"]
-size = Vector2(32, 64)
+size = Vector2(32, 76)
 
 [node name="Terry" type="CharacterBody2D"]
 collision_layer = 2
@@ -15,11 +15,11 @@ z_index = 5
 script = ExtResource("1_script")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 26)
+position = Vector2(0, 34)
 shape = SubResource("RectangleShape2D_terry")
 
 [node name="Hurtbox" type="Area2D" parent="."]
-position = Vector2(0, -16)
+position = Vector2(0, -1)
 collision_layer = 4
 collision_mask = 0
 
