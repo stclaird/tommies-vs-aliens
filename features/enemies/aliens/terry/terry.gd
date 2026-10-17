@@ -3,15 +3,21 @@ extends CharacterBody2D
 signal died
 
 @export_range(1, 100, 1) var max_health := 3
-  
+
 const WALK_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-left.png")
 const WALK_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-right.png")
 const STAND_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-left.png")
 const STAND_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-right.png")
 const SHOT_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-left.png")
 const SHOT_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-right.png")
-const DEAD_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-dead-left.png")
-const DEAD_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-dead-right.png")
+const DEAD_LEFT_TEXTURES: Array[Texture2D] = [
+	preload("res://features/enemies/aliens/sprites/terry-dead-left.png"),
+	preload("res://features/enemies/aliens/sprites/terry-dead-left2.png"),
+]
+const DEAD_RIGHT_TEXTURES: Array[Texture2D] = [
+	preload("res://features/enemies/aliens/sprites/terry-dead-right.png"),
+	preload("res://features/enemies/aliens/sprites/terry-dead-right2.png"),
+]
 
 const PATROL_LEFT := 40.0
 const PATROL_RIGHT := 1160.0
@@ -113,7 +119,8 @@ func take_hit() -> void:
 		hit_animation_playing = true
 		return
 	is_dead = true
-	sprite.texture = DEAD_LEFT_TEXTURE if direction < 0 else DEAD_RIGHT_TEXTURE
+	var dead_textures := DEAD_LEFT_TEXTURES if direction < 0 else DEAD_RIGHT_TEXTURES
+	sprite.texture = dead_textures[rng.randi_range(0, dead_textures.size() - 1)]
 	sprite.hframes = DEAD_FRAMES
 	sprite.frame = 0
 	frame_timer = 0.0
