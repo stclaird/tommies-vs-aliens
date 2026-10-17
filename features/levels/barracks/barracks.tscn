@@ -1,12 +1,14 @@
 [gd_scene format=3 uid="uid://4qqyi5j7odtm"]
 
-[ext_resource type="Texture2D" uid="uid://dqyr05j5ddnhr" path="res://features/player/sprites/tommy-stand-right-Sheet.png" id="1_texture"]
+[ext_resource type="Texture2D" uid="uid://f0s6se3fi0ld" path="res://features/player/sprites/tommy-stand-right-Sheet.png" id="1_texture"]
 [ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://cgvno07hvtc3h" path="res://features/levels/barracks/sprites/barracks.png" id="3_texture"]
 [ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-shower-wall.png" id="4_texture"]
-[ext_resource type="Script" path="res://features/enemies/aliens/terry/wave_manager.gd" id="6_wave_manager"]
+[ext_resource type="Script" path="res://features/spawning/wave_manager.gd" id="6_wave_manager"]
 [ext_resource type="Texture2D" path="res://features/enemies/aliens/sprites/terryicon.png" id="7_terry_icon"]
 [ext_resource type="AudioStream" path="res://features/player/audio/303-fire.wav" id="8_fire_sound"]
+[ext_resource type="Script" path="res://features/levels/barracks/barracks.gd" id="9_script"]
+[ext_resource type="PackedScene" path="res://features/enemies/aliens/terry/terry.tscn" id="10_terry_scene"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(28, 30)
@@ -21,6 +23,7 @@ size = Vector2(86, 67)
 size = Vector2(8, 170)
 
 [node name="Main" type="Node2D" unique_id=2034829179]
+script = ExtResource("9_script")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=400995830]
 z_index = -1
@@ -80,20 +83,20 @@ shape = SubResource("RectangleShape2D_wall_right")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="TerryCounter" type="HBoxContainer" parent="HUD"]
+[node name="EnemyCounter" type="HBoxContainer" parent="HUD"]
 offset_left = 16.0
 offset_top = 12.0
-offset_right = 70.0
+offset_right = 110.0
 offset_bottom = 36.0
 theme_override_constants/separation = 6
 
-[node name="Icon" type="TextureRect" parent="HUD/TerryCounter"]
+[node name="Icon" type="TextureRect" parent="HUD/EnemyCounter"]
 custom_minimum_size = Vector2(19, 18)
 texture = ExtResource("7_terry_icon")
 stretch_mode = 5
 
-[node name="DefeatedCount" type="Label" parent="HUD/TerryCounter"]
-custom_minimum_size = Vector2(24, 18)
+[node name="DefeatedCount" type="Label" parent="HUD/EnemyCounter"]
+custom_minimum_size = Vector2(64, 18)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
@@ -122,5 +125,8 @@ text = "BARRACKS CLEARED!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="TerryWave" type="Node" parent="."]
+[node name="WaveManager" type="Node" parent="."]
 script = ExtResource("6_wave_manager")
+enemy_scenes = Array[PackedScene]([ExtResource("10_terry_scene")])
+total_enemies = 30
+max_active_enemies = 10

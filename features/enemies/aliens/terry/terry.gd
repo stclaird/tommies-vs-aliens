@@ -1,6 +1,8 @@
 extends CharacterBody2D
 
 signal died
+
+@export_range(1, 100, 1) var max_health := 3
   
 const WALK_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-left.png")
 const WALK_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-walk-right.png")
@@ -8,6 +10,8 @@ const STAND_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry
 const STAND_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-stand-right.png")
 const SHOT_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-left.png")
 const SHOT_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-right.png")
+const DEAD_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-dead-left.png")
+const DEAD_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-dead-right.png")
 
 const PATROL_LEFT := 40.0
 const PATROL_RIGHT := 1160.0
@@ -22,6 +26,8 @@ const WALK_TIME_MIN := 3.0
 const WALK_TIME_MAX := 7.0
 const PAUSE_TIME_MIN := 0.8
 const PAUSE_TIME_MAX := 2.0
+const DEAD_FRAMES := 9
+const DEAD_FPS := 8.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -30,11 +36,14 @@ var direction := 1
 var paused := false
 var is_dead := false
 var hit_animation_playing := false
+var death_animation_playing := false
 var state_timer := 0.0
 var frame_timer := 0.0
+var current_health := 3
 
 func _ready() -> void:
 	rng.randomize()
+	current_health = max_health
 	position = Vector2(
 		rng.randf_range(PATROL_LEFT, PATROL_RIGHT),
 		rng.randf_range(SPAWN_TOP, SPAWN_BOTTOM)
@@ -44,6 +53,10 @@ func _ready() -> void:
 	_set_sprite_state(true)
 
 func _physics_process(delta: float) -> void:
+	if death_animation_playing:
+		_advance_death_animation(delta)
+		return
+
 	if hit_animation_playing:
 		_advance_hit_animation(delta)
 		return
@@ -91,14 +104,22 @@ func _physics_process(delta: float) -> void:
 func take_hit() -> void:
 	if is_dead:
 		return
+	current_health -= 1
+	if current_health > 0:
+		sprite.texture = SHOT_LEFT_TEXTURE if direction < 0 else SHOT_RIGHT_TEXTURE
+		sprite.hframes = SHOT_FRAMES
+		sprite.frame = 0
+		frame_timer = 0.0
+		hit_animation_playing = true
+		return
 	is_dead = true
-	hit_animation_playing = true
-	paused = false
-	velocity = Vector2.ZERO
-	sprite.texture = SHOT_LEFT_TEXTURE if direction < 0 else SHOT_RIGHT_TEXTURE
-	sprite.hframes = SHOT_FRAMES
+	sprite.texture = DEAD_LEFT_TEXTURE if direction < 0 else DEAD_RIGHT_TEXTURE
+	sprite.hframes = DEAD_FRAMES
 	sprite.frame = 0
 	frame_timer = 0.0
+	death_animation_playing = true
+	paused = false
+	velocity = Vector2.ZERO
 
 func _advance_hit_animation(delta: float) -> void:
 	frame_timer += delta
@@ -107,6 +128,17 @@ func _advance_hit_animation(delta: float) -> void:
 		frame_timer -= frame_duration
 		if sprite.frame >= SHOT_FRAMES - 1:
 			hit_animation_playing = false
+			_set_sprite_state(not paused)
+			return
+		sprite.frame += 1
+
+func _advance_death_animation(delta: float) -> void:
+	frame_timer += delta
+	var frame_duration := 1.0 / DEAD_FPS
+	while frame_timer >= frame_duration:
+		frame_timer -= frame_duration
+		if sprite.frame >= DEAD_FRAMES - 1:
+			death_animation_playing = false
 			died.emit()
 			queue_free()
 			return
