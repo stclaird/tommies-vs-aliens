@@ -4,7 +4,6 @@ const SHOT_SCENE := preload("res://features/player/projectiles/shot.tscn")
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var firing_sound: AudioStreamPlayer = $FiringSound
-@onready var shower_wall_sprite: Sprite2D = get_node_or_null("../ShowerWall/Sprite2D")
 const PlayerConstants = preload("res://features/player/player_constants.gd")
 
 var frame_timer := 0.0
@@ -147,7 +146,7 @@ func _clamp_to_level_bounds() -> void:
 	var half_size := frame_size * sprite.scale * 0.5
 	var min_x := half_size.x
 	var max_x := PlayerConstants.LEVEL_SIZE.x - half_size.x
-	var min_y := PlayerConstants.TOP_PLAY_AREA_INSET + half_size.y
+	var min_y := PlayerConstants.MIN_CHARACTER_FEET_Y - half_size.y
 	var max_y := PlayerConstants.LEVEL_SIZE.y - half_size.y
 
 	position.x = clampf(position.x, min_x, max_x)
@@ -155,10 +154,3 @@ func _clamp_to_level_bounds() -> void:
 
 func _update_depth_sorting() -> void:
 	sprite.z_index = roundi(global_position.y)
-	if shower_wall_sprite == null or shower_wall_sprite.texture == null:
-		return
-
-	var wall_top_y := shower_wall_sprite.global_position.y - (shower_wall_sprite.texture.get_height() * shower_wall_sprite.scale.y * 0.5)
-	var cutoff_y := wall_top_y + PlayerConstants.SHOWER_WALL_CUTOFF_LOCAL_Y
-	var frame_size := Vector2(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
-	shower_wall_sprite.z_index = roundi(cutoff_y + frame_size.y * sprite.scale.y * 0.5)

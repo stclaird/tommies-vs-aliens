@@ -21,8 +21,8 @@ const DEAD_RIGHT_TEXTURES: Array[Texture2D] = [
 
 const PATROL_LEFT := 40.0
 const PATROL_RIGHT := 1160.0
-const SPAWN_TOP := 80.0
-const SPAWN_BOTTOM := 520.0
+const MIN_SPRITE_FEET_Y := 300.0
+const MAX_SPRITE_FEET_Y := 800.0
 const WALK_SPEED := 48.0
 const WALK_FRAMES := 6
 const WALK_FPS := 8.0
@@ -50,13 +50,16 @@ var current_health := 3
 func _ready() -> void:
 	rng.randomize()
 	current_health = max_health
+	direction = -1 if rng.randi_range(0, 1) == 0 else 1
+	_set_sprite_state(true)
+	var sprite_half_height := sprite.texture.get_height() * sprite.global_scale.y * 0.5
+	var spawn_top := MIN_SPRITE_FEET_Y - sprite_half_height
+	var spawn_bottom := MAX_SPRITE_FEET_Y - sprite_half_height
 	position = Vector2(
 		rng.randf_range(PATROL_LEFT, PATROL_RIGHT),
-		rng.randf_range(SPAWN_TOP, SPAWN_BOTTOM)
+		rng.randf_range(spawn_top, spawn_bottom)
 	)
-	direction = -1 if rng.randi_range(0, 1) == 0 else 1
 	state_timer = rng.randf_range(WALK_TIME_MIN, WALK_TIME_MAX)
-	_set_sprite_state(true)
 
 func _physics_process(delta: float) -> void:
 	if death_animation_playing:
