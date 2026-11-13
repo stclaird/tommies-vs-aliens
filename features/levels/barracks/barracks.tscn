@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://4qqyi5j7odtm"]
 
-[ext_resource type="Texture2D" uid="uid://f0s6se3fi0ld" path="res://features/player/sprites/tommy-stand-right-Sheet.png" id="1_texture"]
+[ext_resource type="Texture2D" path="res://features/player/sprites/tommy-stand-right.png" id="1_texture"]
+[ext_resource type="Texture2D" path="res://features/player/sprites/tommieshadow.png" id="11_shadow"]
 [ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
-[ext_resource type="Texture2D" uid="uid://b15bxifytl8yd" path="res://art_source/barracks-compound.png" id="3_texture"]
-[ext_resource type="Script" path="res://features/spawning/wave_manager.gd" id="6_wave_manager"]
-[ext_resource type="Texture2D" path="res://features/enemies/aliens/sprites/terryicon.png" id="7_terry_icon"]
-[ext_resource type="AudioStream" path="res://features/player/audio/303-fire.wav" id="8_fire_sound"]
-[ext_resource type="Script" path="res://features/levels/barracks/barracks.gd" id="9_script"]
+[ext_resource type="Texture2D" uid="uid://b8inlbymanbgj" path="res://features/levels/barracks/sprites/barracks-compound.png" id="3_texture"]
+[ext_resource type="Script" uid="uid://clo4gseahcw1u" path="res://features/spawning/wave_manager.gd" id="6_wave_manager"]
+[ext_resource type="Texture2D" uid="uid://bqo1vgpgmshta" path="res://features/enemies/aliens/sprites/terryicon.png" id="7_terry_icon"]
+[ext_resource type="AudioStream" uid="uid://b1ei8avtievxk" path="res://features/player/audio/303-fire.wav" id="8_fire_sound"]
+[ext_resource type="Script" uid="uid://ceu4q8jl6atvg" path="res://features/levels/barracks/barracks.gd" id="9_script"]
 [ext_resource type="PackedScene" path="res://features/enemies/aliens/terry/terry.tscn" id="10_terry_scene"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
@@ -21,7 +22,7 @@ position = Vector2(600, 400)
 texture = ExtResource("3_texture")
 
 [node name="Player" type="CharacterBody2D" parent="." unique_id=1350078749]
-position = Vector2(96, 128)
+position = Vector2(845, 310)
 script = ExtResource("2_script")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1652545347]
@@ -35,6 +36,12 @@ limit_right = 1200
 limit_bottom = 800
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
+
+[node name="Shadow" type="Sprite2D" parent="Player"]
+modulate = Color(1, 1, 1, 0.5)
+z_as_relative = false
+position = Vector2(0, 44)
+texture = ExtResource("11_shadow")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1991990350]
 z_index = 10

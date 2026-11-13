@@ -11,17 +11,15 @@ const STAND_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terr
 const SHOT_LEFT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-left.png")
 const SHOT_RIGHT_TEXTURE := preload("res://features/enemies/aliens/sprites/terry-shot-right.png")
 const DEAD_LEFT_TEXTURES: Array[Texture2D] = [
-	preload("res://features/enemies/aliens/sprites/terry-dead-left.png"),
-	preload("res://features/enemies/aliens/sprites/terry-dead-left2.png"),
+	preload("res://features/enemies/aliens/sprites/terry-dead-left.png")
 ]
 const DEAD_RIGHT_TEXTURES: Array[Texture2D] = [
-	preload("res://features/enemies/aliens/sprites/terry-dead-right.png"),
-	preload("res://features/enemies/aliens/sprites/terry-dead-right2.png"),
+	preload("res://features/enemies/aliens/sprites/terry-dead-right.png")
 ]
 
 const PATROL_LEFT := 40.0
 const PATROL_RIGHT := 1160.0
-const MIN_SPRITE_FEET_Y := 300.0
+const MIN_SPRITE_FEET_Y := 305.0
 const MAX_SPRITE_FEET_Y := 800.0
 const WALK_SPEED := 48.0
 const WALK_FRAMES := 6
@@ -32,8 +30,10 @@ const WALK_TIME_MIN := 3.0
 const WALK_TIME_MAX := 7.0
 const PAUSE_TIME_MIN := 0.8
 const PAUSE_TIME_MAX := 2.0
-const DEAD_FRAMES := 9
+const DEAD_FRAME_WIDTH := 128
 const DEAD_FPS := 8.0
+const CORPSE_LINGER_TIME := 3.0
+const CORPSE_FADE_TIME := 1.5
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -46,6 +46,7 @@ var death_animation_playing := false
 var state_timer := 0.0
 var frame_timer := 0.0
 var current_health := 3
+var dead_frames := 1
 
 func _ready() -> void:
 	rng.randomize()
@@ -110,6 +111,9 @@ func _physics_process(delta: float) -> void:
 		frame_timer -= 1.0 / WALK_FPS
 		sprite.frame = (sprite.frame + 1) % WALK_FRAMES
 
+func get_ground_y() -> float:
+	return sprite.global_position.y + sprite.texture.get_height() * sprite.global_scale.y * 0.5
+
 func take_hit() -> void:
 	if is_dead:
 		return
@@ -124,7 +128,8 @@ func take_hit() -> void:
 	is_dead = true
 	var dead_textures := DEAD_LEFT_TEXTURES if direction < 0 else DEAD_RIGHT_TEXTURES
 	sprite.texture = dead_textures[rng.randi_range(0, dead_textures.size() - 1)]
-	sprite.hframes = DEAD_FRAMES
+	dead_frames = sprite.texture.get_width() / DEAD_FRAME_WIDTH
+	sprite.hframes = dead_frames
 	sprite.frame = 0
 	frame_timer = 0.0
 	death_animation_playing = true
@@ -147,12 +152,21 @@ func _advance_death_animation(delta: float) -> void:
 	var frame_duration := 1.0 / DEAD_FPS
 	while frame_timer >= frame_duration:
 		frame_timer -= frame_duration
-		if sprite.frame >= DEAD_FRAMES - 1:
+		if sprite.frame >= dead_frames - 1:
 			death_animation_playing = false
+			_become_corpse()
 			died.emit()
-			queue_free()
 			return
 		sprite.frame += 1
+
+func _become_corpse() -> void:
+	$CollisionShape2D.set_deferred("disabled", true)
+	$Hurtbox/CollisionShape2D.set_deferred("disabled", true)
+	set_physics_process(false)
+	var tween := create_tween()
+	tween.tween_interval(CORPSE_LINGER_TIME)
+	tween.tween_property(self, "modulate:a", 0.0, CORPSE_FADE_TIME)
+	tween.tween_callback(queue_free)
 
 func _set_sprite_state(walking: bool) -> void:
 	if walking:

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://features/enemies/aliens/terry/terry.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://features/enemies/aliens/sprites/shadow.png" id="2_shadow"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_terry"]
 size = Vector2(24, 16)
@@ -25,5 +26,11 @@ collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("RectangleShape2D_terry_hurtbox")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.5)
+z_as_relative = false
+position = Vector2(0, 43)
+texture = ExtResource("2_shadow")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

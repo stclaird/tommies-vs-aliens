@@ -77,6 +77,7 @@ func _shoot() -> void:
 	var sprite_top := sprite.global_position.y - PlayerConstants.SHOOT_RT_TEXTURE.get_height() * sprite.global_scale.y * 0.5
 	shot.global_position = Vector2(global_position.x + shot_direction * 24.0, sprite_top + 20.0 * sprite.global_scale.y)
 	shot.call("set_direction", shot_direction)
+	shot.call("set_ground_y", sprite.global_position.y + PlayerConstants.SHOOT_RT_TEXTURE.get_height() * sprite.global_scale.y * 0.5)
 	firing_sound.play()
 	shot_cooldown = PlayerConstants.SHOOT_ANIMATION_DURATION + PlayerConstants.SHOOT_PAUSE
 
