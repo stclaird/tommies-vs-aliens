@@ -32,7 +32,7 @@ const PAUSE_TIME_MIN := 0.8
 const PAUSE_TIME_MAX := 2.0
 const DEAD_FRAME_WIDTH := 128
 const DEAD_FPS := 8.0
-const CORPSE_LINGER_TIME := 3.0
+const CORPSE_LINGER_TIME := 2.0
 const CORPSE_FADE_TIME := 1.5
 
 @onready var sprite: Sprite2D = $Sprite2D

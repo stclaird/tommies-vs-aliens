@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" path="res://features/player/sprites/tommy-stand-right.png" id="1_texture"]
 [ext_resource type="Texture2D" path="res://features/player/sprites/tommieshadow.png" id="11_shadow"]
+[ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-sky.png" id="12_sky"]
 [ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://b8inlbymanbgj" path="res://features/levels/barracks/sprites/barracks-compound.png" id="3_texture"]
 [ext_resource type="Script" uid="uid://clo4gseahcw1u" path="res://features/spawning/wave_manager.gd" id="6_wave_manager"]
@@ -15,6 +16,14 @@ size = Vector2(28, 30)
 
 [node name="Main" type="Node2D" unique_id=2034829179]
 script = ExtResource("9_script")
+
+[node name="Sky" type="Parallax2D" parent="."]
+z_index = -2
+scroll_scale = Vector2(0.5, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sky"]
+texture = ExtResource("12_sky")
+centered = false
 
 [node name="Background" type="Sprite2D" parent="." unique_id=400995830]
 z_index = -1
