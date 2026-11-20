@@ -1,18 +1,12 @@
 [gd_scene format=3 uid="uid://4qqyi5j7odtm"]
 
-[ext_resource type="Texture2D" path="res://features/player/sprites/tommy-stand-right.png" id="1_texture"]
-[ext_resource type="Texture2D" path="res://features/player/sprites/tommieshadow.png" id="11_shadow"]
+[ext_resource type="PackedScene" path="res://features/player/player.tscn" id="1_player"]
 [ext_resource type="Texture2D" path="res://features/levels/barracks/sprites/barracks-sky.png" id="12_sky"]
-[ext_resource type="Script" uid="uid://cys4l21nxx4tw" path="res://features/player/player.gd" id="2_script"]
 [ext_resource type="Texture2D" uid="uid://b8inlbymanbgj" path="res://features/levels/barracks/sprites/barracks-compound.png" id="3_texture"]
 [ext_resource type="Script" uid="uid://clo4gseahcw1u" path="res://features/spawning/wave_manager.gd" id="6_wave_manager"]
 [ext_resource type="Texture2D" uid="uid://bqo1vgpgmshta" path="res://features/enemies/aliens/sprites/terryicon.png" id="7_terry_icon"]
-[ext_resource type="AudioStream" uid="uid://b1ei8avtievxk" path="res://features/player/audio/303-fire.wav" id="8_fire_sound"]
 [ext_resource type="Script" uid="uid://ceu4q8jl6atvg" path="res://features/levels/barracks/barracks.gd" id="9_script"]
 [ext_resource type="PackedScene" path="res://features/enemies/aliens/terry/terry.tscn" id="10_terry_scene"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(28, 30)
 
 [node name="Main" type="Node2D" unique_id=2034829179]
 script = ExtResource("9_script")
@@ -30,36 +24,15 @@ z_index = -1
 position = Vector2(600, 400)
 texture = ExtResource("3_texture")
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=1350078749]
+[node name="Player" parent="." unique_id=1350078749 instance=ExtResource("1_player")]
 position = Vector2(845, 310)
-script = ExtResource("2_script")
+movement_bounds = Rect2(0, 305, 1200, 495)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=1652545347]
-position = Vector2(0, 4)
-shape = SubResource("RectangleShape2D_player")
-
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1671633583]
+[node name="Camera2D" parent="Player" index="1"]
 limit_left = 0
 limit_top = 0
 limit_right = 1200
 limit_bottom = 800
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
-
-[node name="Shadow" type="Sprite2D" parent="Player"]
-modulate = Color(1, 1, 1, 0.5)
-z_as_relative = false
-position = Vector2(0, 44)
-texture = ExtResource("11_shadow")
-
-[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=1991990350]
-z_index = 10
-z_as_relative = false
-texture = ExtResource("1_texture")
-hframes = 6
-
-[node name="FiringSound" type="AudioStreamPlayer" parent="Player"]
-stream = ExtResource("8_fire_sound")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -110,3 +83,4 @@ script = ExtResource("6_wave_manager")
 enemy_scenes = Array[PackedScene]([ExtResource("10_terry_scene")])
 total_enemies = 30
 max_active_enemies = 10
+enemy_movement_bounds = Rect2(40, 305, 1120, 495)

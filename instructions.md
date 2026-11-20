@@ -83,9 +83,12 @@ res://
 - Complete: wave_manager.gd lives in features/spawning/, accepts a list of enemy scenes
   and configurable wave sizes, and emits progress and completion signals. The barracks
   level owns the generic defeated/total counter and victory response.
-- Remaining from the initial snapshot: barracks.tscn builds Player, HUD and camera limits
-  (1200x800) inline. Some ext_resources lack uids (re-save in Godot before moving files).
-- terry.gd still hardcodes barracks bounds, randomises its own position in _ready (would
-  override spawn points), uses manual texture/frame animation, and has configurable health
-  (one hit by default).
-
+- The reusable player scene lives in features/player/player.tscn; the barracks level
+  instances it and sets its camera limits (1200x800). The HUD is still built inline.
+  Some ext_resources lack uids (re-save in Godot before moving files).
+- Each level sets the player's movement_bounds and WaveManager's enemy_movement_bounds.
+  Their vertical limits describe the sprite's feet; player horizontal limits are level
+  edges, while enemy horizontal limits are patrol/spawn centre positions. Camera limits
+  remain separate. Use collision bodies for level-specific barriers.
+- Terry randomises its position within the configured enemy bounds in _ready, uses manual
+  texture/frame animation, and has configurable health.

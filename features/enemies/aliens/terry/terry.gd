@@ -17,10 +17,6 @@ const DEAD_RIGHT_TEXTURES: Array[Texture2D] = [
 	preload("res://features/enemies/aliens/sprites/terry-dead-right.png")
 ]
 
-const PATROL_LEFT := 40.0
-const PATROL_RIGHT := 1160.0
-const MIN_SPRITE_FEET_Y := 305.0
-const MAX_SPRITE_FEET_Y := 800.0
 const WALK_SPEED := 48.0
 const WALK_FRAMES := 6
 const WALK_FPS := 8.0
@@ -47,17 +43,25 @@ var state_timer := 0.0
 var frame_timer := 0.0
 var current_health := 3
 var dead_frames := 1
+var movement_bounds := Rect2()
+
+func configure_movement_bounds(bounds: Rect2) -> void:
+	movement_bounds = bounds
 
 func _ready() -> void:
+	if movement_bounds.size.x <= 0.0 or movement_bounds.size.y <= 0.0:
+		push_error("Terry requires positive movement bounds configured by the level.")
+		set_physics_process(false)
+		return
 	rng.randomize()
 	current_health = max_health
 	direction = -1 if rng.randi_range(0, 1) == 0 else 1
 	_set_sprite_state(true)
 	var sprite_half_height := sprite.texture.get_height() * sprite.global_scale.y * 0.5
-	var spawn_top := MIN_SPRITE_FEET_Y - sprite_half_height
-	var spawn_bottom := MAX_SPRITE_FEET_Y - sprite_half_height
+	var spawn_top := movement_bounds.position.y - sprite_half_height
+	var spawn_bottom := movement_bounds.end.y - sprite_half_height
 	position = Vector2(
-		rng.randf_range(PATROL_LEFT, PATROL_RIGHT),
+		rng.randf_range(movement_bounds.position.x, movement_bounds.end.x),
 		rng.randf_range(spawn_top, spawn_bottom)
 	)
 	state_timer = rng.randf_range(WALK_TIME_MIN, WALK_TIME_MAX)
@@ -89,12 +93,12 @@ func _physics_process(delta: float) -> void:
 	if is_on_wall():
 		direction *= -1
 		_set_sprite_state(true)
-	elif position.x <= PATROL_LEFT:
-		position.x = PATROL_LEFT
+	elif position.x <= movement_bounds.position.x:
+		position.x = movement_bounds.position.x
 		direction = 1
 		_set_sprite_state(true)
-	elif position.x >= PATROL_RIGHT:
-		position.x = PATROL_RIGHT
+	elif position.x >= movement_bounds.end.x:
+		position.x = movement_bounds.end.x
 		direction = -1
 		_set_sprite_state(true)
 

@@ -6,6 +6,7 @@ signal all_enemies_defeated
 @export var enemy_scenes: Array[PackedScene] = []
 @export_range(1, 1000, 1) var total_enemies := 30
 @export_range(1, 100, 1) var max_active_enemies := 10
+@export var enemy_movement_bounds := Rect2()
 
 var defeated_count := 0
 var spawned_count := 0
@@ -24,6 +25,12 @@ func _fill_active_slots() -> void:
 			push_error("Wave enemy scenes must provide a died signal and take_hit() method.")
 			enemy.free()
 			return
+		if enemy.has_method("configure_movement_bounds"):
+			if enemy_movement_bounds.size.x <= 0.0 or enemy_movement_bounds.size.y <= 0.0:
+				push_error("WaveManager requires positive enemy movement bounds for this enemy.")
+				enemy.free()
+				return
+			enemy.call("configure_movement_bounds", enemy_movement_bounds)
 		enemy.connect("died", _on_enemy_died)
 		get_parent().call_deferred("add_child", enemy)
 		active_count += 1

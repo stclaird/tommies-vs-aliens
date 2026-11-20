@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 const SHOT_SCENE := preload("res://features/player/projectiles/shot.tscn")
 
+@export var movement_bounds := Rect2()
+
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var firing_sound: AudioStreamPlayer = $FiringSound
 const PlayerConstants = preload("res://features/player/player_constants.gd")
@@ -14,6 +16,10 @@ var was_moving := false
 var shoot_animation_timer := 0.0
 
 func _ready() -> void:
+	if movement_bounds.size.x <= 0.0 or movement_bounds.size.y <= 0.0:
+		push_error("Player requires positive movement bounds configured by the level.")
+		set_physics_process(false)
+		return
 	sprite.texture = PlayerConstants.STAND_RT_TEXTURE
 	sprite.hframes = PlayerConstants.STAND_FRAMES
 	sprite.frame = 0
@@ -145,10 +151,15 @@ func _update_sprite_scale() -> void:
 func _clamp_to_level_bounds() -> void:
 	var frame_size := Vector2(sprite.texture.get_width() / sprite.hframes, sprite.texture.get_height())
 	var half_size := frame_size * sprite.scale * 0.5
-	var min_x := half_size.x
-	var max_x := PlayerConstants.LEVEL_SIZE.x - half_size.x
-	var min_y := PlayerConstants.MIN_CHARACTER_FEET_Y - half_size.y
-	var max_y := PlayerConstants.LEVEL_SIZE.y - half_size.y
+	var min_x := movement_bounds.position.x + half_size.x
+	var max_x := movement_bounds.end.x - half_size.x
+	var min_y := movement_bounds.position.y - half_size.y
+	var max_y := movement_bounds.end.y - half_size.y
+
+	if min_x > max_x:
+		push_error("Player movement bounds must be at least as wide as the player sprite.")
+		set_physics_process(false)
+		return
 
 	position.x = clampf(position.x, min_x, max_x)
 	position.y = clampf(position.y, min_y, max_y)
